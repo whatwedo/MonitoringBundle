@@ -1,0 +1,35 @@
+services:
+
+    # Manager
+    whatwedo_monitoring.manager.check:
+        class: whatwedo\MonitoringBundle\Manager\CheckManager
+
+    # Checks
+    whatwedo_monitoring.check.doctrine_connection:
+        class: whatwedo\MonitoringBundle\Check\DoctrineConnectionCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }
+
+    whatwedo_monitoring.check.doctrine_schema_sync:
+        class: whatwedo\MonitoringBundle\Check\DoctrineSchemaSyncCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }
+
+    whatwedo_monitoring.check.symfony_requirements:
+        class: whatwedo\MonitoringBundle\Check\SymfonyRequirementsCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }
+
+    whatwedo_monitoring.check.security_adivsory:
+        class: ZendDiagnostics\Check\SecurityAdvisory
+        tags:
+            - { name: whatwedo.monitoring.check }
+
+    whatwedo_monitoring.check.jms_job_status:
+        class: whatwedo\MonitoringBundle\Check\JMSJobStatusCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }

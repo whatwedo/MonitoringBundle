@@ -1,0 +1,3 @@
+site_name: whatwedoMonitoringBundle
+theme: readthedocs
+docs_dir: .

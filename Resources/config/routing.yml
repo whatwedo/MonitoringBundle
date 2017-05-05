@@ -1,0 +1,3 @@
+whatwedo_monitoring_check:
+    path:     /
+    defaults: { _controller: whatwedoMonitoringBundle:Check:check }
