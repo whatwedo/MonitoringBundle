@@ -1,5 +1,5 @@
-[![Latest Stable Version](https://poser.pugx.org/whatwedo/search-bundle/v/stable)](https://packagist.org/packages/whatwedo/search-bundle)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/6e3545f5-a0af-4708-b330-5587b4ff6811/mini.png)](https://insight.sensiolabs.com/projects/6e3545f5-a0af-4708-b330-5587b4ff6811)
+[![Latest Stable Version](https://poser.pugx.org/whatwedo/monitoring-bundle/v/stable)](https://packagist.org/packages/whatwedo/monitoring-bundle)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/f4e32125-7f5b-4071-9a6e-9296c1f6acf7/mini.png)](https://insight.sensiolabs.com/projects/f4e32125-7f5b-4071-9a6e-9296c1f6acf7)
 
 # whatwedoMonitoringBundle
 
