@@ -24,7 +24,8 @@ services:
             - { name: whatwedo.monitoring.check }
 
     whatwedo_monitoring.check.security_adivsory:
-        class: ZendDiagnostics\Check\SecurityAdvisory
+        class: whatwedo\MonitoringBundle\Check\SecurityAdvisoryCheck
+        arguments: ['@service_container']
         tags:
             - { name: whatwedo.monitoring.check }
 
