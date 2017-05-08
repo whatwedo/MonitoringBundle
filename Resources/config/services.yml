@@ -29,6 +29,12 @@ services:
         tags:
             - { name: whatwedo.monitoring.check }
 
+    whatwedo_monitoring.check.doctrine_migration:
+        class: whatwedo\MonitoringBundle\Check\DoctrineMigrationCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }
+
     whatwedo_monitoring.check.jms_job_status:
         class: whatwedo\MonitoringBundle\Check\JMSJobStatusCheck
         arguments: ['@service_container']
