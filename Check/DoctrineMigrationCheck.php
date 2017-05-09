@@ -51,29 +51,20 @@ class DoctrineMigrationCheck extends AbstractCheck
      */
     public function check()
     {
-        if (!$this->has('doctrine')) {
+        if (!$this->has('doctrine.dbal.default_connection')) {
             return new Skip('Doctrine is not available.');
         }
         if (!class_exists('Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle')) {
             return new Skip('DoctrineMigrationsBundle is not available.');
         }
 
-        /** @var EntityManager $manager */
-        $doctrine = $this->get('doctrine');
-        $connections = $doctrine->getConnections();
-
         /** @var Connection $connection */
-        foreach ($connections as $connection) {
-            $migrationConfig = new Configuration($connection);
-            DoctrineCommand::configureMigrations($this->container, $migrationConfig);
-            $checkInstance = new DoctrineMigration($migrationConfig);
-            $check = $checkInstance->check();
-            if (!$check instanceof Success) {
-                return $check;
-            }
-        }
+        $connection = $this->get('doctrine.dbal.default_connection');
 
-        return new Success();
+        $migrationConfig = new Configuration($connection);
+        DoctrineCommand::configureMigrations($this->container, $migrationConfig);
+        $checkInstance = new DoctrineMigration($migrationConfig);
+        return $checkInstance->check();
     }
 
     /**
