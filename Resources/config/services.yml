@@ -40,3 +40,9 @@ services:
         arguments: ['@service_container']
         tags:
             - { name: whatwedo.monitoring.check }
+
+    whatwedo_monitoring.check.ldap_tools_bundle_connection:
+        class: whatwedo\MonitoringBundle\Check\LdapToolsBundleConnectionCheck
+        arguments: ['@service_container']
+        tags:
+            - { name: whatwedo.monitoring.check }
