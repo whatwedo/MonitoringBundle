@@ -31,6 +31,7 @@ namespace whatwedo\MonitoringBundle\DependencyInjection\Compiler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use whatwedo\MonitoringBundle\Manager\CheckManager;
 
 /**
  * Class CheckPass
@@ -46,16 +47,14 @@ class CheckPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        // always first check if the primary service is defined
-        if (!$container->has('whatwedo_monitoring.manager.check')) {
+        // check if the primary service is defined
+        if (!$container->has(CheckManager::class)) {
             return;
         }
-        $definition = $container->findDefinition('whatwedo_monitoring.manager.check');
+        $definition = $container->findDefinition(CheckManager::class);
 
-        // find all service IDs with the whatwedo.monitoring.check tag
         $taggedServices = $container->findTaggedServiceIds('whatwedo.monitoring.check');
 
-        // Add tagged service (checks) to whatwedo_monitoring.manager.check
         foreach ($taggedServices as $id => $tags) {
             $definition->addMethodCall('addCheck', array(new Reference($id)));
         }
