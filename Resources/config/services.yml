@@ -5,7 +5,7 @@ services:
         public: false
 
     whatwedo\MonitoringBundle\:
-        resource: '../../{Manager}'
+        resource: '../../{Controller,Command,Manager}'
 
     whatwedo\MonitoringBundle\Check\:
         resource: '../../Check/*'
