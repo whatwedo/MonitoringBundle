@@ -27,10 +27,10 @@
 
 namespace whatwedo\MonitoringBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use whatwedo\MonitoringBundle\Check\AbstractCheck;
 use whatwedo\MonitoringBundle\Enum\GlobalStatusEnum;
+use whatwedo\MonitoringBundle\Manager\CheckManager;
 use whatwedo\MonitoringBundle\Reporter\ArrayReporter;
 use ZendDiagnostics\Runner\Runner;
 
@@ -38,8 +38,20 @@ use ZendDiagnostics\Runner\Runner;
  * Class CheckController
  * @package whatwedo\MonitoringBundle\Controller
  */
-class CheckController extends Controller
+class CheckController extends AbstractController
 {
+    /**
+     * @var CheckManager $checkManager
+     */
+    protected $checkManager;
+
+    /**
+     * CheckController constructor.
+     */
+    public function __construct(CheckManager $checkManager)
+    {
+        $this->checkManager = $checkManager;
+    }
 
     /**
      *
@@ -47,8 +59,7 @@ class CheckController extends Controller
     public function checkAction()
     {
         // Get checks
-        $checkManager = $this->get('whatwedo_monitoring.manager.check');
-        $checks = $checkManager->getChecks();
+        $checks = $this->checkManager->getChecks();
 
         // Run checks
         $runner = new Runner();
@@ -58,14 +69,14 @@ class CheckController extends Controller
         $runner->run();
 
         // Return response
-        $response =  new JsonResponse(
+        $response = new JsonResponse(
             [
                 'globalStatus' => $reporter->getGlobalStatus(),
                 'checks' => $reporter->getResults(),
             ],
             ($reporter->getGlobalStatus() === GlobalStatusEnum::OK ? 200 : 500)
         );
-        $response->setEncodingOptions($response->getEncodingOptions()|JSON_PRETTY_PRINT);
+        $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
         return $response;
     }
 }

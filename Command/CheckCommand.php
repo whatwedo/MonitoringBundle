@@ -27,9 +27,10 @@
 
 namespace whatwedo\MonitoringBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use whatwedo\MonitoringBundle\Manager\CheckManager;
 use whatwedo\MonitoringBundle\Reporter\ConsoleReporter;
 use ZendDiagnostics\Runner\Runner;
 
@@ -37,9 +38,23 @@ use ZendDiagnostics\Runner\Runner;
  * Class CheckCommand
  * @package whatwedo\MonitoringBundle\Command
  */
-class CheckCommand extends ContainerAwareCommand
+class CheckCommand extends Command
 {
+    /**
+     * @var CheckManager $checkManager
+     */
+    protected $checkManager;
 
+    /**
+     * CheckController constructor.
+     */
+    public function __construct(CheckManager $checkManager)
+    {
+        $this->checkManager = $checkManager;
+
+        parent::__construct();
+    }
+    
     /**
      *
      */
@@ -59,8 +74,7 @@ class CheckCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Get checks
-        $checkManager = $this->getContainer()->get('whatwedo_monitoring.manager.check');
-        $checks = $checkManager->getChecks();
+        $checks = $this->checkManager->getChecks();
 
         // Run checks
         $runner = new Runner();
