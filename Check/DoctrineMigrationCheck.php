@@ -27,50 +27,53 @@
 
 namespace whatwedo\MonitoringBundle\Check;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use ZendDiagnostics\Check\CheckInterface;
+use Doctrine\Bundle\MigrationsBundle\Command\DoctrineCommand;
+use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
+use Doctrine\DBAL\Migrations\Configuration\Configuration;
+use Doctrine\ORM\EntityManager;
+use ZendDiagnostics\Check\DoctrineMigration;
+use ZendDiagnostics\Result\ResultInterface;
+use ZendDiagnostics\Result\Skip;
+use Doctrine\DBAL\Connection;
+use ZendDiagnostics\Result\Success;
 
 /**
- * Class AbstractCheck
+ * Class DoctrineMigrationCheck
  * @package whatwedo\MonitoringBundle\Check
  */
-abstract class AbstractCheck implements CheckInterface
+class DoctrineMigrationCheck extends AbstractCheck
 {
-    use ContainerAwareTrait;
 
     /**
-     * @param $serviceId
-     * @return object
+     * Perform the actual check and return a ResultInterface
+     *
+     * @return ResultInterface
      */
-    public function get($serviceId)
+    public function check()
     {
-        return $this->container->get($serviceId);
+        if (!$this->has('doctrine.dbal.default_connection')) {
+            return new Skip('Doctrine is not available.');
+        }
+        if (!class_exists('Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle')) {
+            return new Skip('DoctrineMigrationsBundle is not available.');
+        }
+
+        /** @var Connection $connection */
+        $connection = $this->get('doctrine.dbal.default_connection');
+
+        $migrationConfig = new Configuration($connection);
+        DoctrineCommand::configureMigrations($this->container, $migrationConfig);
+        $checkInstance = new DoctrineMigration($migrationConfig);
+        return $checkInstance->check();
     }
 
     /**
-     * @param $serviceId
-     * @return bool
+     * Return a label describing this test instance.
+     *
+     * @return string
      */
-    public function has($serviceId)
+    public function getLabel()
     {
-        return $this->container->has($serviceId);
-    }
-
-    /**
-     * @param $parameter
-     * @return object
-     */
-    public function getParameter($parameter)
-    {
-        return $this->container->getParameter($parameter);
-    }
-
-    /**
-     * @param $parameter
-     * @return bool
-     */
-    public function hasParameter($parameter)
-    {
-        return $this->container->hasParameter($parameter);
+        return 'Checks if all Doctrine migrations are applied';
     }
 }

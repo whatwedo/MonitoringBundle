@@ -25,58 +25,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace whatwedo\MonitoringBundle\Controller;
+namespace whatwedo\MonitoringBundle\Check;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use whatwedo\MonitoringBundle\Enum\GlobalStatusEnum;
-use whatwedo\MonitoringBundle\Manager\CheckManager;
-use whatwedo\MonitoringBundle\Reporter\ArrayReporter;
-use ZendDiagnostics\Runner\Runner;
+use LdapTools\DomainConfiguration;
+use LdapTools\LdapManager;
+use ZendDiagnostics\Result\ResultInterface;
+use ZendDiagnostics\Result\Skip;
+use ZendDiagnostics\Result\Success;
 
 /**
- * Class CheckController
- * @package whatwedo\MonitoringBundle\Controller
+ * Class LdapToolsBundleConnectionCheck
+ * @package whatwedo\MonitoringBundle\Check
  */
-class CheckController extends AbstractController
+class LdapToolsBundleConnectionCheck extends AbstractCheck
 {
-    /**
-     * @var CheckManager $checkManager
-     */
-    protected $checkManager;
 
     /**
-     * CheckController constructor.
+     * Perform the actual check and return a ResultInterface
+     *
+     * @return ResultInterface
      */
-    public function __construct(CheckManager $checkManager)
+    public function check()
     {
-        $this->checkManager = $checkManager;
+        if (!$this->has('ldap_tools.ldap_manager') || !$this->has('ldap_tools.configuration')) {
+            return new Skip('LdapToolsBundle is not available.');
+        }
+        /** @var LdapManager $ldapManager */
+        $ldapManager = $this->get('ldap_tools.ldap_manager');
+
+        $domainConfigurations = $this->get('ldap_tools.configuration')->getDomainConfiguration();
+        /** @var DomainConfiguration $domainConfiguration */
+        foreach ($domainConfigurations as $domainConfiguration) {
+            $ldapManager->getConnection($domainConfiguration->getDomainName());
+        }
+
+        return new Success();
     }
 
     /**
+     * Return a label describing this test instance.
      *
+     * @return string
      */
-    public function checkAction()
+    public function getLabel()
     {
-        // Get checks
-        $checks = $this->checkManager->getChecks();
-
-        // Run checks
-        $runner = new Runner();
-        $runner->addChecks($checks);
-        $reporter = new ArrayReporter();
-        $runner->addReporter($reporter);
-        $runner->run();
-
-        // Return response
-        $response = new JsonResponse(
-            [
-                'globalStatus' => $reporter->getGlobalStatus(),
-                'checks' => $reporter->getResults(),
-            ],
-            ($reporter->getGlobalStatus() === GlobalStatusEnum::OK ? 200 : 500)
-        );
-        $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
-        return $response;
+        return 'Checks all LDAP connections of LdapToolsBundle';
     }
 }
