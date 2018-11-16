@@ -27,7 +27,7 @@
 
 namespace whatwedo\MonitoringBundle\Check;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use ZendDiagnostics\Check\CheckInterface;
 
 /**
@@ -36,20 +36,7 @@ use ZendDiagnostics\Check\CheckInterface;
  */
 abstract class AbstractCheck implements CheckInterface
 {
-
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * AbstractCheck constructor.
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
+    use ContainerAwareTrait;
 
     /**
      * @param $serviceId
