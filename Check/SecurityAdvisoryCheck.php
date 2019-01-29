@@ -66,6 +66,6 @@ class SecurityAdvisoryCheck extends AbstractCheck
      */
     public function getLabel()
     {
-        return 'Checks if Doctrine schema is in sync with metadata';
+        return 'Checks if there are any security advisories';
     }
 }
