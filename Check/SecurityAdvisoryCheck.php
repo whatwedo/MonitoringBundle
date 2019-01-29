@@ -28,6 +28,7 @@
 namespace whatwedo\MonitoringBundle\Check;
 
 use ZendDiagnostics\Check\SecurityAdvisory;
+use ZendDiagnostics\Result\Skip;
 
 /**
  * Class SecurityAdvisoryCheck
@@ -43,10 +44,17 @@ class SecurityAdvisoryCheck extends AbstractCheck
      */
     public function check()
     {
+        // Check if SensioLabs SecurityChecker is installed
+        if (!class_exists('\SensioLabs\Security\SecurityChecker')) {
+            return new Skip('SensioLabs SecurityChecker is not available');
+        }
+
+        // Check if composer.lock file exists
         $path = $this->getParameter('kernel.root_dir').'/../composer.lock';
         if (!file_exists($path)) {
             return new Skip('composer.lock file not found');
         }
+
         $securityAdvisory = new SecurityAdvisory($path);
         return $securityAdvisory->check();
     }
